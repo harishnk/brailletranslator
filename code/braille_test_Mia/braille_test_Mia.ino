@@ -2,15 +2,15 @@ class Braille
 {
   public:
     Braille(byte pin, byte speed);
-    void sendZero();
-    void sendDot();
+    void sendZero(int pinindex);
+    void sendDot(int pinindex);
     //void sendMsg(char *str);
     void sendChar(char c);
 };
 
   //array of 'on' bits
   char brailleOn[8];
-  int LEDpins [] = {3, 5, 9, 10, 11, 13};
+  int LEDpins [] = {3, 5, 6, 9, 10, 11};
 
   byte _speed;	// Speed in WPM
   byte _pin;	// Pin to beep or toggle
@@ -19,69 +19,69 @@ class Braille
   int _dotlen;	// Length of dot (1)
   int _zerolen; //Length of a zero (0)
   byte _brailleCodepage[] = {	// 
-    B01101100, //! 33
-    B00010000, //" 34
-    B01011100, //# 35
-    B11100100, //$ 36
-    B11000100, //% 37
-    B11101100, //& 38
-    B00001000, //'39
-    B10111100, //( 40
-    B01111100, //) 41
-    B10000100, //* 42
-    B01001100, //+ 43
-    B00000100,  //, 44    
-    B00001100, //- 45
-    B01000100, //. 46
-    B01001000, /// 47
-    B00011100, //0 48
-    B00100000, //1 49
-    B00101000, //2 50
-    B00110000, //3 51
-    B00110100, //4 52
-    B00100100, //5 53
-    B00111000, //6 54
-    B00111100, //7 55
-    B00101100, //8 56
-    B00011000, //9 57
-    B10010100, //: 58
-    B00010100, //; 59
-    B10100100, //< 60
-    B11111100, //= 61
-    B01011000, //> 62
-    B11010100, //? 63
-    B01000000, //@ 64
-    B10000000, //ASCII Glyph A 65
-    B10100000, //B 66
-    B11000000, //C 67
-    B11010000, //D 68
-    B10100000, //E 69
-    B11100000, //F 70
-    B11110000, //G 71
-    B10110000, //H 72
-    B01100000, //I 73
-    B01110000, //J 74
-    B10001000, //K 75
-    B10101000, //L 76
-    B11001000, //M 77
-    B11011000, //N 78
-    B10011000, //O 79
-    B11101000, //P 80
-    B11111000, //Q 81
-    B10111000, //R 82
-    B01101000, //S 83
-    B01111000, //T 84
-    B10001100, //U 85
-    B10101100, //V 86
-    B01110100, //W 87
-    B11001100, //X 88
-    B11011100, //Y 89
-    B10011100, //Z 90
-    B01100100, //[ 91
-    B10110100, //\92
-    B11110100, //] 93
-    B01010000, //^ 94
-    B01010100 //_ 95  
+    B011011, //! 33
+    B000100, //" 34
+    B010111, //# 35
+    B111001, //$ 36
+    B110001, //% 37
+    B111011, //& 38
+    B000010, //'39
+    B101111, //( 40
+    B011111, //) 41
+    B100001, //* 42
+    B010011, //+ 43
+    B000001,  //, 44    
+    B000011, //- 45
+    B010001, //. 46
+    B010010, /// 47
+    B000111, //0 48
+    B001000, //1 49
+    B001010, //2 50
+    B001100, //3 51
+    B001101, //4 52
+    B001001, //5 53
+    B001110, //6 54
+    B001111, //7 55
+    B001011, //8 56
+    B000110, //9 57
+    B100101, //: 58
+    B000101, //; 59
+    B101001, //< 60
+    B111111, //= 61
+    B010110, //> 62
+    B110101, //? 63
+    B010000, //@ 64
+    B100000, //ASCII Glyph A 65
+    B101000, //B 66
+    B110000, //C 67
+    B110100, //D 68
+    B101000, //E 69
+    B111000, //F 70
+    B111100, //G 71
+    B101100, //H 72
+    B011000, //I 73
+    B011100, //J 74
+    B100010, //K 75
+    B101010, //L 76
+    B110010, //M 77
+    B110110, //N 78
+    B100110, //O 79
+    B111010, //P 80
+    B111110, //Q 81
+    B101110, //R 82
+    B011010, //S 83
+    B011110, //T 84
+    B100011, //U 85
+    B101011, //V 86
+    B011101, //W 87
+    B110011, //X 88
+    B110111, //Y 89
+    B100111, //Z 90
+    B011001, //[ 91
+    B101101, //\92
+    B111101, //] 93
+    B010100, //^ 94
+    B010101 //_ 95  
     };
   
 
@@ -97,23 +97,28 @@ Braille::Braille(byte pin, byte speed)
   //_zerolen =  (3*_dotlen);
 
   // Set the pin to output mode
-  pinMode(_pin, OUTPUT);
+  int i = 0;
+  int localpin;
+  for (i = 0; i < 8; i++){
+    localpin = LEDpins[i];
+    pinMode(localpin, OUTPUT);
+  }
 }
 
-void Braille::sendZero()
+void Braille::sendZero(int pinindex)
 {
-  digitalWrite(_pin, LOW);
-  delay(300);
+  digitalWrite(LEDpins[pinindex], LOW);
+  //delay(300);
   //digitalWrite(_pin, LOW);
   //delay(_dotlen);
 }
 
-void Braille::sendDot()
+void Braille::sendDot(int pinindex)
 {
-  digitalWrite(_pin, HIGH);
-  delay(300);
-  digitalWrite(_pin, LOW);
-  delay(300);
+  digitalWrite(LEDpins[pinindex], HIGH);
+  //delay(300);
+  //digitalWrite(LEDpins[pinindex], LOW);
+  //delay(300);
 }
 
 void Braille::sendChar(char c)
@@ -121,7 +126,7 @@ void Braille::sendChar(char c)
   int _i = 0;
   byte _BrailleBinaryRep;
   byte tempinput;
-  byte mask = B1;
+  byte mask = B100000;
 
   // Send space
   if (c == ' ') {
@@ -142,23 +147,49 @@ void Braille::sendChar(char c)
   }
 
 
-  for (int j = 0; j < 8; j++) {
-    int k = -(j) + 8;
+/*  for (int j = 0; j < 6; j++) {
+    //int k = -(j) + 6;
+    int k = 5 - j;
     int LED = k;
     
     brailleOn[k] = (_BrailleBinaryRep & (mask << j)) != 0;
-
+    Serial.print("the bit mask result is  ");
+    Serial.println(_BrailleBinaryRep & (mask << j));
+    Serial.print("the value of j is");
+    Serial.println(j);
+    Serial.print("the value of k is");
+    Serial.println(k);    
     if (brailleOn[k] == 1) {
           Serial.print("LED #: ");
           Serial.println(k);
-	  sendDot();
+	  sendDot(j);
     } else {
-	  sendZero();
+	  sendZero(j);
     }
-  }
+  }*/
+  for (int j = 0; j < 6; j++) {
+    int k = -(j) + 6;
+    //int k = 5 - j;
+    int LED = k;
+    
+    brailleOn[k] = (_BrailleBinaryRep & (mask >> j)) != 0;
+    Serial.print("the bit mask result is  ");
+    Serial.println(_BrailleBinaryRep & (mask >> j));
+    Serial.print("the value of j is");
+    Serial.println(j);
+    Serial.print("the value of k is");
+    Serial.println(k);    
+    if (brailleOn[k] == 1) {
+          Serial.print("LED #: ");
+          Serial.println(k);
+	  sendDot(j);
+    } else {
+	  sendZero(j);
+    }
+  }  
 }
 
-Braille braille(LEDpins[2], 3);
+Braille braille(LEDpins[5], 3);
 
 void setup() {
   // put your setup code here, to run once:  
