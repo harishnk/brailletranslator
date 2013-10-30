@@ -2,15 +2,14 @@ class Braille
 {
   public:
     Braille(byte pin, byte speed);
-    void sendZero(int pinindex);
-    void sendDot(int pinindex);
-    //void sendMsg(char *str);
+    void sendZero(int pinIndex);
+    void sendDot(int pinIndex);
     void sendChar(char c);
 };
 
-  //array of 'on' bits
-  char brailleOn[8];
-  int LEDpins [] = {3, 5, 6, 9, 10, 11};
+  
+  char brailleOn[8]; //array of 'on' bits
+  int LEDpins [] = {3, 5, 6, 9, 10, 11}; //array of pins LEDs are connected to
 
   byte _speed;	// Speed in WPM
   byte _pin;	// Pin to beep or toggle
@@ -18,7 +17,7 @@ class Braille
   byte _zero;
   int _dotlen;	// Length of dot (1)
   int _zerolen; //Length of a zero (0)
-  byte _brailleCodepage[] = {	// 
+  byte _brailleCodepage[] = {	//
     B011011, //! 33
     B000100, //" 34
     B010111, //# 35
@@ -105,79 +104,47 @@ Braille::Braille(byte pin, byte speed)
   }
 }
 
-void Braille::sendZero(int pinindex)
+void Braille::sendZero(int pinIndex)
 {
-  digitalWrite(LEDpins[pinindex], LOW);
-  //delay(300);
-  //digitalWrite(_pin, LOW);
-  //delay(_dotlen);
+  digitalWrite(LEDpins[pinIndex], LOW);
 }
 
-void Braille::sendDot(int pinindex)
+void Braille::sendDot(int pinIndex)
 {
-  digitalWrite(LEDpins[pinindex], HIGH);
-  //delay(300);
-  //digitalWrite(LEDpins[pinindex], LOW);
-  //delay(300);
+  digitalWrite(LEDpins[pinIndex], HIGH);
 }
 
 void Braille::sendChar(char c)
 {
   int _i = 0;
   byte _BrailleBinaryRep;
-  byte tempinput;
+  byte userInput;
   byte mask = B100000;
 
   // Send space
   if (c == ' ') {
-    //delay(_dotlen) ;
     return ;
   }
   else {
-    tempinput = (byte) c;
-    if (tempinput >= 97 && tempinput <= 122) {
-      tempinput -= 32;  
+    userInput = (byte) c;
+    if (userInput >= 97 && userInput <= 122) {
+      userInput -= 32;  
     }
 
-    _i = (tempinput - 33);
+    _i = (userInput - 33);
     _BrailleBinaryRep = _brailleCodepage[_i];
-    Serial.println("Braille mapped value is  ");
-    Serial.println(_BrailleBinaryRep, BIN);
-
   }
 
-
-/*  for (int j = 0; j < 6; j++) {
-    //int k = -(j) + 6;
-    int k = 5 - j;
-    int LED = k;
-    
-    brailleOn[k] = (_BrailleBinaryRep & (mask << j)) != 0;
-    Serial.print("the bit mask result is  ");
-    Serial.println(_BrailleBinaryRep & (mask << j));
-    Serial.print("the value of j is");
-    Serial.println(j);
-    Serial.print("the value of k is");
-    Serial.println(k);    
-    if (brailleOn[k] == 1) {
-          Serial.print("LED #: ");
-          Serial.println(k);
-	  sendDot(j);
-    } else {
-	  sendZero(j);
-    }
-  }*/
   for (int j = 0; j < 6; j++) {
     int k = -(j) + 6;
-    //int k = 5 - j;
     int LED = k;
     
     brailleOn[k] = (_BrailleBinaryRep & (mask >> j)) != 0;
-    Serial.print("the bit mask result is  ");
+    Serial.print("the bit mask result is: ");
     Serial.println(_BrailleBinaryRep & (mask >> j));
-    Serial.print("the value of j is");
+    Serial.print("the value of j is: ");
     Serial.println(j);
-    Serial.print("the value of k is");
+    Serial.print("the value of k is: ");
     Serial.println(k);    
     if (brailleOn[k] == 1) {
           Serial.print("LED #: ");
@@ -192,17 +159,18 @@ void Braille::sendChar(char c)
 Braille braille(LEDpins[5], 3);
 
 void setup() {
-  // put your setup code here, to run once:  
-  Serial.begin(9600);
+  //higher baud rate for minimal write delay
+  Serial.begin(115200);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly: 
   String stringIn = "";
   char fragmentIn;
 
   while(Serial.available()) {
     fragmentIn = Serial.read();
+    Serial.print("You entered: ");
+    Serial.println(fragmentIn);
     braille.sendChar(fragmentIn);
   }
 }
